@@ -4,9 +4,8 @@ import pandas as pd
 import numpy as np
 from database import insert_contact
 from sklearn.metrics.pairwise import cosine_similarity
-import sklearn
 
-# Load the saved model components
+# Load the pre-trained model
 model_data = pkl.load(open("model.pkl", "rb"))
 
 # Extract components
@@ -14,80 +13,67 @@ vectorizer = model_data["vectorizer"]
 feature_matrix = model_data["feature_matrix"]
 df_final = model_data["df_final"]
 
+# Reset index to avoid indexing issues
+df_final.reset_index(drop=True, inplace=True)
+
 # Compute cosine similarity dynamically
 cosine_sim = cosine_similarity(feature_matrix, feature_matrix)
 
-# Flask App Initialization
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    """Render homepage with popular books"""
-    return render_template(
-        'index.html',
-        book_name=list(df_final['Title'].values[:10]),  # Display top 10 books
-        author=list(df_final['Author'].values[:10]),
-        image=list(df_final['Image URL'].values[:10]),
-        category=list(df_final['Category'].values[:10])
-    )
+    return render_template('index.html',
+                           book_name=list(df_final['Title'].values[:100]),
+                           author=list(df_final['Author'].values[:100]),
+                           image=list(df_final['Image URL'].values[:100]),
+                           category=list(df_final['Category'].values[:100]) if 'Category' in df_final.columns else ["Unknown"] * len(df_final))
 
 @app.route('/recommend')
 def recommend_ui():
-    """Render recommendation page UI"""
     return render_template('recommend.html')
 
 @app.route('/recommend_books', methods=['POST'])
 def recommend():
-    """Handle book recommendation requests"""
     try:
-        user_input = request.form.get('user_input')
-        if user_input not in df_final['Title'].values:
-            return render_template('recommend.html', error="Book not found. Please try another.")
+        # Get user input and clean it
+        user_input = request.form.get('user_input', '').strip().lower()
 
-        # Find book index
-        index = df_final[df_final['Title'] == user_input].index[0]
+        # Check if book exists in the dataset
+        matching_indices = df_final[df_final['Title'].str.lower().str.strip() == user_input].index.tolist()
+        
+        if not matching_indices:
+            return render_template('recommend.html', error="Book not found in the database. Please try another.")
 
+        index = matching_indices[0]  # Get the first match
+        
         # Get similarity scores
         similar_books = list(enumerate(cosine_sim[index]))
 
-        # Sort by similarity
-        sorted_books = sorted(similar_books, key=lambda x: x[1], reverse=True)[:6]
+        # Sort books by similarity score (excluding the input book itself)
+        sorted_books = sorted(similar_books, key=lambda x: x[1], reverse=True)[:6]  
 
-        # Extract recommended books
-        data = []
-        for i in sorted_books:
-            try:
-                item = []
-                temp_df = df_final.iloc[[i[0]]]
-                item.append(temp_df['Title'].values[0])
-                item.append(temp_df['Author'].values[0])
-                item.append(temp_df['Image URL'].values[0])
-                item.append(temp_df['Category'].values[0])
-                data.append(item)
-            except Exception as e:
-                print(f"Error processing similar items: {e}")
+        # Extract recommended book indices
+        top_books = [i[0] for i in sorted_books]
 
-        return render_template('recommend.html', data=data)
+        # Select the recommended books from the dataset
+        recommendations = df_final.loc[top_books, ['Title', 'Author', 'Category', 'Image URL']].values.tolist()
+
+        return render_template('recommend.html', data=recommendations)
 
     except Exception as e:
-        print(f"Error in recommend_books route: {e}")
-        return "An error occurred while processing your recommendation request. Please try again later."
+        return render_template('recommend.html', error=f"An error occurred: {str(e)}")
 
-@app.route("/contact", methods=["GET", "POST"])
+
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    """Handle contact form submissions"""
-    if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        message = request.form.get("message")
-
-        # Insert the data into the database
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        message = request.form.get('message')
         insert_contact(name, email, message)
-
-        # Show success message
-        return render_template("contact.html", success="Your message has been sent successfully!")
-
-    return render_template("contact.html")
+        return render_template('contact.html', success="Your message has been sent successfully!")
+    return render_template('contact.html')
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0',port=5001)
+    app.run(debug=True,host='127.0.0.1',port=5001)

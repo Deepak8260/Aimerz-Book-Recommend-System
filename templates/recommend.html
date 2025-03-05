@@ -242,17 +242,20 @@
 
     <div class="container">
       <div class="row">
-        {% if data %} {% for i in data %}
-        <div class="col-md-3">
-          <div class="card">
-            <img src="{{ i[2] }}" alt="Book Image" class="card-img-top" />
-            <div class="card-body">
-              <h5 class="card-title">{{ i[0] }}</h5>
-              <p class="card-text">By {{ i[1] }}</p>
+        {% if data %}
+          {% for book in data %}
+            <div class="col-md-3">
+              <div class="card">
+                <img src="{{ book[3] }}" alt="Book Image" class="card-img-top" />
+                <div class="card-body">
+                  <h5 class="card-title">{{ book[0] }}</h5>
+                  <p class="card-text">By {{ book[1] }}</p>
+                  <p class="card-text">Category: {{ book[2] }}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        {% endfor %} {% endif %}
+          {% endfor %}
+        {% endif %}
       </div>
     </div>
     {% endif %}
