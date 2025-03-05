@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us - BookHive</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("/static/contactimage.jpg"); /* Fixed path */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        color: white;
+      }
+      .container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: rgba(151, 110, 82, 0.8);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      h1 {
+        text-align: center;
+        color: #ffdfba;
+      }
+      p {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #ffdfba;
+      }
+      input,
+      textarea {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        display: block;
+        font-size: 14px;
+      }
+      textarea {
+        resize: none;
+      }
+      button {
+        width: 100%;
+        background-color: #3e2213;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #56382e;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #aaa;
+      }
+      /* Success message styling */
+      .success-message {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 128, 0, 0.9);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: none;
+      }
+      /* Floating button style */
+      .floating-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: rgba(151, 110, 82, 0.9);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        font-size: 18px;
+        transition: all 0.3s ease;
+        animation: float 2s ease-in-out infinite;
+        text-decoration: none;
+        text-align: center;
+        display: inline-block;
+      }
+      .floating-btn:hover {
+        background-color: #3e2213;
+      }
+      /* Floating animation */
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Success message -->
+    {% if success %}
+    <div class="success-message" id="success-message">
+      {{ success }}
+    </div>
+    {% endif %}
+
+    <div class="container">
+      <h1>Contact Us</h1>
+      <p>
+        We'd love to hear from you! Send us your queries, feedback, or
+        suggestions.
+      </p>
+
+      <form id="contact-form" action="/contact" method="POST" onsubmit="return validateForm()">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your name" required />
+
+        <label for="email">Email Address</label>
+        <input type="email" name="email" id="email" placeholder="Enter your email" required />
+
+        <label for="message">Message</label>
+        <textarea id="message" rows="5" name="message" placeholder="Enter your message" required></textarea>
+
+        <button type="submit">Send Message</button>
+      </form>
+      <div class="footer">© 2024 BookHive. All rights reserved.</div>
+    </div>
+
+    <!-- Floating button to go to Home -->
+    <a href="{{ url_for('index') }}" class="floating-btn">Go To Home</a>
+
+    <script>
+      // JavaScript to display success message for 3 seconds
+      document.addEventListener("DOMContentLoaded", function () {
+        const successMessage = document.getElementById("success-message");
+        if (successMessage && successMessage.textContent.trim() !== "") {
+          successMessage.style.display = "block";
+          setTimeout(() => {
+            successMessage.style.display = "none";
+          }, 3000);
+        }
+      });
+
+      // Form validation
+      function validateForm() {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const message = document.getElementById("message").value.trim();
+
+        if (name === "" || email === "" || message === "") {
+          alert("❌ Please fill out all fields.");
+          return false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert("❌ Please enter a valid email.");
+          return false;
+        }
+
+        return true;
+      }
+    </script>
+  </body>
+</html>
