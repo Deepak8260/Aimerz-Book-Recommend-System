@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book Recommender System</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXhW+ALEwIH"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       crossorigin="anonymous"
     />
+
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Noto+Sans+JP:wght@100..900&display=swap"); /*=============== VARIABLES CSS ===============*/
+
       body {
-        background-image: url("static/background.jpg");
+        background-image: url("static/ra.jpg");
         background-size: cover;
         background-attachment: fixed;
       }
@@ -22,11 +24,58 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        height: 3020px;
+        background-color: rgba(0, 0, 0, 0.614);
         z-index: -1;
       }
+      #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+      }
+      .hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
 
+      .logo-animation {
+        font-size: 50px;
+        font-weight: bold;
+        color: #ffbd59;
+
+        text-shadow: 2px 2px 5px rgba(255, 189, 89, 0.8);
+        animation: fadeZoom 3s ease-in-out forwards;
+      }
+
+      @keyframes fadeZoom {
+        0% {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        40% {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        100% {
+          opacity: 0;
+          transform: scale(6);
+        }
+      }
+
+      #main-content {
+        display: none;
+      }
       .text-white {
         color: #ffbd59 !important;
       }
@@ -44,16 +93,20 @@
       .links:hover {
         background-color: #3e2213;
         border-radius: 5px;
-        color: #f2f2f2;
+        color: white;
       }
 
       .navbar {
+        position: sticky;
+        top: 0;
+        left: 0;
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #976e52b0;
+        background-color: rgba(151, 110, 82, 0.824);
         padding: 10px 20px;
         margin: 10px 40px;
+        z-index: 10;
       }
       .navbar-brand {
         color: white;
@@ -81,120 +134,294 @@
         justify-content: center;
       }
 
-      .main-div {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 25px;
-        margin-bottom: 20px;
+      .card__container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px; /* Increased gap for better spacing */
+        justify-content: space-around;
+        margin: 20px auto;
       }
 
-      .card {
-        position: relative;
-        display: inline-block;
-        margin-bottom: 30px;
-        margin-right: 10px;
-        overflow: hidden;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      }
-
-      .card img {
-        display: block;
-        height: 400px;
+      .card__article {
+        background: white;
         width: 300px;
-        border-radius: 10px 10px 0 0;
-      }
-
-      .info {
-        position: absolute;
-        bottom: -185px; /* Initially hidden below the card */
-        left: 0;
-        background-color: #a1662fe0;
-        color: white;
-        padding: 10px 20px;
-        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
-        transition: transform 0.3s ease, bottom 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 10px;
       }
 
-      .card:hover .info {
-        bottom: 0; /* Lift up to align with the card */
+      .card__img {
+        max-width: 100%;
+        border-radius: 8px;
       }
 
-      .rating-icon {
+      .card__data {
+        width: 280px;
+        background-color: #a1662fe8;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.15);
+        border-radius: 1rem;
         position: absolute;
-        top: 10px;
-        right: 10px;
-        height: 40px;
-        width: 40px;
-        border-radius: 50%;
-        background-color: #7c001f;
+        bottom: -9rem;
+        left: 0;
+        right: 0;
+        margin-inline: auto;
+        opacity: 0;
+        transition: opacity 1s 1s;
+      }
+
+      .card__description {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 0.25rem;
         color: white;
+      }
+      .card__author {
+        font-size: 15px;
+        color: white;
+      }
+      .card__title {
+        font-size: 16px;
+        font-weight: 500;
+        color: white;
+        margin-bottom: 0.75rem;
+        display: block;
+        width: 100%;
+        white-space: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        cursor: grab;
+        padding-bottom: 5px;
+      }
+      .card__title::-webkit-scrollbar {
+        display: none;
+      }
+
+      .card__button {
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 500;
+        color: black;
+      }
+
+      .card__button:hover {
+        text-decoration: underline;
+      }
+
+      .card__article:hover .card__data {
+        animation: show-data 1s forwards;
+        opacity: 1;
+        transition: opacity 0.3s;
+      }
+
+      .card__article:hover {
+        animation: remove-overflow 2s forwards;
+      }
+
+      .card__article:not(:hover) {
+        animation: show-overflow 2s forwards;
+      }
+
+      .card__article:not(:hover) .card__data {
+        animation: remove-data 1s forwards;
+      }
+
+      @keyframes show-data {
+        50% {
+          transform: translateY(-10rem);
+        }
+        100% {
+          transform: translateY(-7rem);
+        }
+      }
+
+      @keyframes remove-overflow {
+        to {
+          overflow: initial;
+        }
+      }
+
+      @keyframes remove-data {
+        0% {
+          transform: translateY(-7rem);
+        }
+        50% {
+          transform: translateY(-10rem);
+        }
+        100% {
+          transform: translateY(0.5rem);
+        }
+      }
+
+      @keyframes show-overflow {
+        0% {
+          overflow: initial;
+          pointer-events: none;
+        }
+        50% {
+          overflow: hidden;
+        }
+      }
+      .pagination {
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+        margin-top: 20px;
+        gap: 10px;
+        margin-bottom: 10px;
       }
 
-      .rating-icon:hover {
-        background-color: #333;
-        color: transparent;
-      }
-
-      .rating-icon:hover::before {
-        content: attr(data-rating);
-        position: absolute;
+      .pagination button {
+        background-color: #986a4c;
         color: white;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
         font-size: 16px;
+        transition: background 0.3s;
+      }
+
+      .pagination button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .pagination button:hover:not(:disabled) {
+        background-color: #6e4a32;
+      }
+      #pageInfo {
+        color: white;
+      }
+      .books {
+        color: #ffbd59;
+        margin-left: 113px;
+        font-size: 50px;
+        font-family: "Dancing Script", cursive;
       }
     </style>
   </head>
-  <body loading="lazy">
-    <nav class="navbar">
-      <a class="navbar-brand" href="/">BOOKHIVE</a>
-      <ul class="xyz">
-        <li><a href="/" class="links">Home</a></li>
-        <li><a href="/recommend" class="links">Recommend</a></li>
-        <li><a href="/contact" class="links">Contact</a></li>
-      </ul>
-    </nav>
-
-    <div
-      style="
-        margin-left: 40px;
-        margin-bottom: 20px;
-        width: 1438px;
-        background-color: rgb(0, 0, 0, 0.4);
-        border-radius: 15px;
-        height: 250px;
-      "
-    >
-      <img src="../static/herosection.png" alt="" style="width: 1430px" />
+  <body>
+    <div id="preloader">
+      <div class="logo-animation">BOOKHIVE</div>
     </div>
-
-    <div class="container">
-      <div class="col-12">
-        <h1 class="text-white text-center" style="font-size: 50px">
-          Top 50 Books
-        </h1>
+    <div id="main-content">
+      <nav class="navbar">
+        <a class="navbar-brand" href="/">BOOKHIVE</a>
+        <ul class="xyz">
+          <li>
+            <a href="/" class="links"> Home</a>
+          </li>
+          <li>
+            <a href="/recommend" class="links">Recommend</a>
+          </li>
+          <li>
+            <a href="/contact" class="links">Contact</a>
+          </li>
+        </ul>
+      </nav>
+      <div>
+        <img src="static/herosection.png" alt="" style="margin-top: 20px" />
       </div>
-      <div class="main-div">
-        {% for i in range(book_name|length) %}
-        <div class="card">
-          <img src="{{ image[i] }}" alt="Book Cover" />
-          <div class="info">
-            <h5 class="text-highlight">{{ book_name[i] }}</h5>
-            <p>By {{ author[i] }}</p>
-            <p>Category: {{ category[i] }}</p>
-          </div>
+      <div class="books">
+        <p>Top 500 Books</p>
+      </div>
+      <div class="container">
+        <div class="card__container">
+          {% for i in range(book_name|length) %}
+          <article class="card__article">
+            <img
+              src="{{ image[i] }}"
+              alt="Book Cover"
+              class="card__img"
+              width="343px"
+              height="450px"
+            />
+            <div class="card__data">
+              <h2 class="card__title">{{ book_name[i] }}</h2>
+              <p class="card__author">By {{ author[i] }}</p>
+              <span class="card__description">Category: {{ category[i] }}</span>
+            </div>
+          </article>
+          {% endfor %}
         </div>
-        {% endfor %}
+      </div>
+      <div class="pagination">
+        <button id="prevPage">Previous</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage">Next</button>
       </div>
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let preloader = document.getElementById("preloader");
+        let mainContent = document.getElementById("main-content");
+
+        if (
+          !sessionStorage.getItem("preloaderShown") ||
+          performance.navigation.type === 1
+        ) {
+          // Show preloader on first visit or page refresh
+          preloader.classList.remove("hidden");
+          mainContent.style.display = "none";
+
+          setTimeout(function () {
+            preloader.classList.add("hidden");
+
+            // Wait for fade-out animation, then remove preloader from DOM
+            setTimeout(() => {
+              preloader.style.display = "none";
+              mainContent.style.display = "block";
+            }, 500); // Match transition duration
+            sessionStorage.setItem("preloaderShown", "true");
+          }, 3000);
+        } else {
+          // Skip preloader if navigated internally
+          preloader.style.display = "none";
+          mainContent.style.display = "block";
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const booksPerPage = 20; // Show 20 books per page
+        let currentPage = 1;
+        const books = document.querySelectorAll(".card__article"); // Select all book cards
+        const totalPages = Math.ceil(books.length / booksPerPage);
+        const prevButton = document.getElementById("prevPage");
+        const nextButton = document.getElementById("nextPage");
+        const pageInfo = document.getElementById("pageInfo");
+
+        function showPage(page) {
+          books.forEach((book, index) => {
+            book.style.display =
+              index >= (page - 1) * booksPerPage && index < page * booksPerPage
+                ? "block"
+                : "none";
+          });
+          pageInfo.textContent = `Page ${page} of ${totalPages}`;
+          prevButton.disabled = page === 1;
+          nextButton.disabled = page === totalPages;
+        }
+
+        prevButton.addEventListener("click", function () {
+          if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+          }
+        });
+
+        nextButton.addEventListener("click", function () {
+          if (currentPage < totalPages) {
+            currentPage++;
+            showPage(currentPage);
+          }
+        });
+
+        showPage(currentPage);
+      });
+    </script>
   </body>
 </html>

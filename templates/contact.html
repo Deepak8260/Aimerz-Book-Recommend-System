@@ -68,7 +68,7 @@
         text-align: center;
         margin-top: 20px;
         font-size: 14px;
-        color: #aaa;
+        color: white;
       }
       /* Success message styling */
       .success-message {
@@ -88,7 +88,7 @@
       .floating-btn {
         position: fixed;
         bottom: 30px;
-        right: 30px;
+        right: 713px;
         background-color: rgba(151, 110, 82, 0.9);
         color: white;
         border: none;
@@ -123,9 +123,7 @@
   <body>
     <!-- Success message -->
     {% if success %}
-    <div class="success-message" id="success-message">
-      {{ success }}
-    </div>
+    <div class="success-message" id="success-message">{{ success }}</div>
     {% endif %}
 
     <div class="container">
@@ -135,15 +133,38 @@
         suggestions.
       </p>
 
-      <form id="contact-form" action="/contact" method="POST" onsubmit="return validateForm()">
+      <form
+        id="contact-form"
+        action="/contact"
+        method="POST"
+        onsubmit="return validateForm()"
+      >
         <label for="name">Full Name</label>
-        <input type="text" id="name" name="name" placeholder="Enter your name" required />
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Enter your name"
+          required
+        />
 
         <label for="email">Email Address</label>
-        <input type="email" name="email" id="email" placeholder="Enter your email" required />
+        <input
+          type="email"
+          name="email"
+          id="email"
+          placeholder="Enter your email"
+          required
+        />
 
         <label for="message">Message</label>
-        <textarea id="message" rows="5" name="message" placeholder="Enter your message" required></textarea>
+        <textarea
+          id="message"
+          rows="5"
+          name="message"
+          placeholder="Enter your message"
+          required
+        ></textarea>
 
         <button type="submit">Send Message</button>
       </form>
