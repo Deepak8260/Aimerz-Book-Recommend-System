@@ -31,6 +31,11 @@ except Exception as e:
 app = Flask(__name__)
 
 @app.route('/')
+def recommend_ui():
+    logger.info("Rendering recommendation page.")
+    return render_template('recommend.html')
+
+@app.route('/all_books')
 def index():
     logger.info("Rendering home page.")
     return render_template('index.html',
@@ -39,10 +44,6 @@ def index():
                            image=list(df_final['Image URL'].values[:500]),
                            category=list(df_final['Category'].values[:500]) if 'Category' in df_final.columns else ["Unknown"] * len(df_final))
 
-@app.route('/recommend')
-def recommend_ui():
-    logger.info("Rendering recommendation page.")
-    return render_template('recommend.html')
 
 @app.route('/recommend_books', methods=['POST'])
 def recommend():
